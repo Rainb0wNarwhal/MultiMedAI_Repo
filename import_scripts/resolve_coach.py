@@ -69,7 +69,7 @@ for repo_path in (PROJECT_ROOT, os.path.join(PROJECT_ROOT, "src")):
     if os.path.isdir(repo_path) and repo_path not in sys.path:
         sys.path.insert(0, repo_path)
 
-from ollama_client import generate_answer  # noqa: E402
+from llm_client import generate_answer  # noqa: E402
 from retriever import find_best_entries  # noqa: E402
 from resolve_state import connect, get_project_state_snapshot  # noqa: E402
 
@@ -115,7 +115,7 @@ def main() -> None:
     for entry in entries:
         print(f"- {entry.get('id')} :: {entry.get('category')}")
 
-    answer = generate_answer(question, facts, entries, model="llama3.2:3b")
+    answer = generate_answer(question, facts, entries)
     print("\nCoach answer:")
     print(answer)
 

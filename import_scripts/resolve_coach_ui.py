@@ -35,7 +35,7 @@ for path in (PROJECT_ROOT, os.path.join(PROJECT_ROOT, "src")):
     if path not in sys.path:
         sys.path.insert(0, path)
 
-from ollama_client import generate_answer  # noqa: E402
+from llm_client import generate_answer, backend_label  # noqa: E402
 from retriever import find_best_entries  # noqa: E402
 from resolve_state import connect, get_project_state_snapshot  # noqa: E402
 
@@ -164,11 +164,11 @@ def main() -> None:
             items["Sources"].PlainText = "No entries retrieved."
             return
 
-        items["Status"].Text = "Thinking locally with Ollama…"
+        items["Status"].Text = f"Thinking… ({backend_label()})"
         items["Sources"].PlainText = "\n".join(
             f"• {entry.get('id')} — {entry.get('tool_or_technique')}" for entry in entries
         )
-        items["Answer"].PlainText = generate_answer(question, facts, entries, model="llama3.2:3b")
+        items["Answer"].PlainText = generate_answer(question, facts, entries)
         items["Status"].Text = "Ready. Guidance is informational; the coach has not changed your project."
 
     def clear(_event=None) -> None:

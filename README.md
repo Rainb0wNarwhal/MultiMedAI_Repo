@@ -86,6 +86,37 @@ corpus, extracted page text, generated manual indexes, PDFs, Python caches,
 and local model files. Those assets are source material for optional indexing
 and are not required to review or develop the application code.
 
+## LLM backend: cloud (temporary) vs. local
+
+Generation currently defaults to a **free cloud API (Groq)** instead of a local
+Ollama model, since local inference is heavy for older machines. This is meant
+to be temporary — the switch back to fully local/offline is a one-line change.
+
+- `src/cloud_client.py` — calls Groq's free-tier API (OpenAI-compatible).
+- `src/ollama_client.py` — original local Ollama client (untouched, for later).
+- `src/llm_client.py` — the switch. Both `resolve_coach.py` and
+  `resolve_coach_ui.py` import `generate_answer` from here, not from a specific
+  backend, so nothing else needs to change when you switch.
+
+**Setup (cloud, current default):**
+
+1. Get a free API key at https://console.groq.com/keys (no credit card required).
+2. Set it as an environment variable before running the coach:
+   - Windows (persistent): `setx GROQ_API_KEY "your-key-here"` (restart Resolve after)
+   - Windows (current session only): `set GROQ_API_KEY=your-key-here`
+3. Run as usual — `MULTIMEDAI_LLM_BACKEND` defaults to `cloud`, so no extra config needed.
+
+**Switching back to local later:**
+
+1. Install Ollama and pull a model: `ollama pull llama3.2:3b`.
+2. Set `MULTIMEDAI_LLM_BACKEND=local` as an environment variable.
+3. That's it — `llm_client.py` will route to `ollama_client.py` instead.
+
+Free-tier note: Groq's free plan is rate-limited (roughly 30 requests/min,
+capped daily tokens depending on model) but requires no card and doesn't
+expire. If you hit limits, Google AI Studio's Gemini free tier is a solid
+alternative and could be added as another backend the same way.
+
 ## Getting started (developer)
 
 1. Install dependencies:
