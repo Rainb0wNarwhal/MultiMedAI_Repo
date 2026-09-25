@@ -1,0 +1,23 @@
+# Schema for symptom -> tool -> explanation entries.
+# Every file in content/entries/*.yaml must be a list of entries following this shape.
+# This file is documentation, not code - see src/validate_entries.py for the enforced version.
+
+id: string                     # unique slug, snake_case, matches filename convention
+page: string                   # optional Resolve page, e.g. color, edit, deliver
+category: string                # one of: skin-tone, matching, contrast, saturation,
+                                 # noise-artifacts, node-structure, tracking,
+                                 # scopes-reading, qualifiers-masks, delivery,
+                                 # editing-timeline, editing-audio, multicam,
+                                 # media-management, titles-subtitles
+symptom_phrases: [string]       # how real users phrase the problem - not jargon
+project_state_signals: [string] # optional facts the Resolve scripting API layer could
+                                 # detect that support/rule out this entry
+diagnosis: string                # 1-2 sentences: what's technically happening
+tool_or_technique: string        # the specific Resolve tool/page/node type
+explanation: string              # the teaching content itself
+step_pointer: string             # short "go here, do this" - a pointer, never an
+                                  # instruction the app auto-executes
+common_mistake: string           # optional - the wrong instinct users often have
+related_entries: [string]        # ids of related entries
+manual_reference: string         # section/topic name in the official manual, for
+                                  # fact-checking against source material

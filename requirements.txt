@@ -1,0 +1,6 @@
+pyyaml>=6.0
+
+# Not yet needed, uncomment as the embedding/coach layers get built:
+# sentence-transformers   # local embedding model
+# chromadb                # local vector store
+# llama-cpp-python         # local LLM inference

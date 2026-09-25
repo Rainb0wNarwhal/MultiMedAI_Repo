@@ -1,0 +1,594 @@
+- id: edit_video_track_disabled
+  page: edit
+  category: delivery
+  symptom_phrases:
+    - "my timeline is black even though there is a clip"
+    - "I put an image on the timeline but it does not show"
+    - "the video track is not showing anything"
+    - "my clip is in the timeline but the viewer is black"
+  project_state_signals:
+    - "Edit: video track 1"
+    - "is disabled"
+  diagnosis: >
+    A clip can remain on the timeline while its video track is disabled. In that
+    state Resolve keeps the edit intact but does not send that track to the
+    timeline viewer or render output.
+  tool_or_technique: "Edit-page video-track enable control"
+  explanation: >
+    Check the track header before changing the clip itself. Enable the affected
+    video track, then put the playhead over the clip. If the source viewer also
+    remains black, the problem is likely media decoding or the GPU display path,
+    rather than the timeline edit.
+  step_pointer: "Edit page -> video track header -> enable video track -> place playhead over clip"
+  common_mistake: "Changing opacity or re-importing media before checking whether the whole track is disabled."
+  related_entries: [edit_clip_not_visible_at_playhead]
+  manual_reference: "Timeline Track Controls; Enabling and Disabling Tracks"
+
+- id: edit_clip_not_visible_at_playhead
+  page: edit
+  category: delivery
+  symptom_phrases:
+    - "the timeline is empty where I am parked"
+    - "I cannot see my clip at the playhead"
+    - "the viewer is black at this point in the edit"
+    - "my image is not visible at the current time"
+  project_state_signals:
+    - "Edit: playhead timecode"
+    - "Edit: current timeline clip"
+  diagnosis: >
+    The timeline viewer only shows media under the current playhead. A clip can
+    exist on a track but be outside the current time position, leaving the viewer
+    black at that frame.
+  tool_or_technique: "Edit-page playhead navigation and timeline zoom"
+  explanation: >
+    Move the playhead directly over the visible clip and confirm that the clip is
+    on an enabled video track. Use Fit Timeline to see where media sits before
+    assuming Resolve has lost the edit.
+  step_pointer: "Edit page -> Fit Timeline -> place playhead over visible clip -> check Timeline viewer"
+  common_mistake: "Testing the viewer at a blank timeline position instead of over the clip."
+  related_entries: [edit_video_track_disabled]
+  manual_reference: "Navigating the Timeline; Timeline Viewer"
+
+- id: edit_cuts_feel_jarring
+  page: edit
+  category: matching
+  symptom_phrases:
+    - "my cuts feel abrupt"
+    - "the edit feels jumpy"
+    - "the cut between these clips is too harsh"
+    - "my clips do not flow together"
+  project_state_signals:
+    - "Edit: timeline has"
+  diagnosis: >
+    A jarring cut is often a mismatch in motion, framing, sound, or visual
+    continuity—not automatically a problem that needs a transition.
+  tool_or_technique: "Trim Edit mode, J/L cuts, and continuity review"
+  explanation: >
+    Review the frames immediately before and after the cut. First try trimming
+    the outgoing or incoming clip to make the motion or eyeline change feel
+    intentional. For dialogue, consider separating audio timing from picture
+    timing with a J or L cut before adding a visible transition.
+  step_pointer: "Edit page -> select edit point -> Trim Edit mode -> review outgoing and incoming frames"
+  common_mistake: "Adding a dissolve to hide a timing or continuity problem without checking the edit point."
+  related_entries: [shot_matching_mismatch]
+  manual_reference: "Trim Editing; Split Edits; Transitions"
+
+- id: edit_transition_is_not_working
+  page: edit
+  category: delivery
+  symptom_phrases:
+    - "my transition will not apply"
+    - "there is no room for a dissolve"
+    - "the transition has a red warning"
+    - "my cross dissolve looks wrong"
+  project_state_signals:
+    - "Edit: current timeline clip"
+  diagnosis: >
+    A standard transition needs usable handles: extra source frames before or
+    after an edit. If the clips already use every available frame, Resolve cannot
+    create the requested overlap cleanly.
+  tool_or_technique: "Edit-page transition handles and trim adjustment"
+  explanation: >
+    Check whether both clips have frames available beyond the edit point. Shorten
+    either side slightly to create handles, then apply the transition again.
+    If handles are unavailable, use a shorter transition or choose an edit that
+    does not require overlapping frames.
+  step_pointer: "Edit page -> inspect edit point -> trim clips to create handles -> apply transition"
+  common_mistake: "Repeatedly applying the same transition without creating source handles."
+  related_entries: [edit_cuts_feel_jarring]
+  manual_reference: "Adding Transitions; Transition Handles"
+
+- id: edit_trim_changes_wrong_side
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "trimming is changing the wrong clip"
+    - "I only want to shorten this side of the cut"
+    - "why does moving the edit point change both clips"
+    - "I keep trimming the wrong side"
+  project_state_signals: []
+  diagnosis: >
+    Different trim modes change different parts of an edit. The problem is
+    usually mode selection, not a broken timeline.
+  tool_or_technique: "Selection tool, Trim Edit mode, ripple and roll trims"
+  explanation: >
+    Choose the trim behavior based on what must remain fixed. A ripple trim
+    changes one clip's duration and moves later material; a roll trim moves the
+    edit point while keeping total timeline duration unchanged. Select the edit
+    side deliberately before dragging.
+  step_pointer: "Edit page -> select edit point -> choose trim side/mode -> drag edit point"
+  common_mistake: "Dragging the center of an edit when only one clip edge should move."
+  related_entries: [edit_gap_between_clips]
+  manual_reference: "Trim Edit Mode; Ripple, Roll, Slip and Slide Edits"
+
+- id: edit_gap_between_clips
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "there is a blank gap between my clips"
+    - "how do I close this empty space"
+    - "my clips are not touching"
+    - "why is there black between edits"
+  project_state_signals:
+    - "Edit: timeline has"
+  diagnosis: >
+    A gap is an empty range on the timeline. It produces black video or silence
+    unless another track covers it.
+  tool_or_technique: "Gap selection and ripple delete"
+  explanation: >
+    First decide whether the pause is intentional. If it is not, select the gap
+    and use ripple delete so later clips move left without leaving another hole.
+    Check linked audio before deleting so picture and sound stay aligned.
+  step_pointer: "Edit page -> select gap -> Ripple Delete -> review adjacent audio"
+  common_mistake: "Deleting a nearby clip instead of selecting the actual gap."
+  related_entries: [edit_trim_changes_wrong_side, edit_audio_cut_abrupt]
+  manual_reference: "Working with Gaps; Ripple Delete"
+
+- id: edit_clip_wont_move
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "this clip will not move"
+    - "I cannot drag my clip"
+    - "why is my timeline clip stuck"
+    - "Resolve will not let me edit this track"
+  project_state_signals:
+    - "is locked"
+  diagnosis: >
+    A locked track protects its clips from edits. The clip may look selectable,
+    but Resolve will prevent timeline changes until the track is unlocked.
+  tool_or_technique: "Track lock control in the Edit timeline header"
+  explanation: >
+    Check the lock icon on the clip's video and audio tracks. Unlock only the
+    track you need, make the edit, then re-lock it if it is serving as a
+    protection layer for finished work.
+  step_pointer: "Edit page -> track header -> unlock affected track -> move or trim clip"
+  common_mistake: "Assuming the clip is offline or corrupted when the track is simply locked."
+  related_entries: [edit_video_track_disabled, edit_linked_clips_move_together]
+  manual_reference: "Timeline Track Controls; Locking Tracks"
+
+- id: edit_linked_clips_move_together
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "my audio moves when I move the video"
+    - "why are these clips attached together"
+    - "I only want to move the picture"
+    - "my video and audio keep moving as one"
+  project_state_signals: []
+  diagnosis: >
+    Video and production audio are commonly linked so normal edits preserve sync.
+    Moving both is expected behavior while linking is enabled.
+  tool_or_technique: "Linked-selection toggle and clip linking"
+  explanation: >
+    Keep clips linked for edits that should preserve sync. For a one-off move,
+    temporarily disable Linked Selection or select only the required component;
+    permanently unlink only when picture and audio genuinely need independent
+    editorial timing.
+  step_pointer: "Edit page -> toggle Linked Selection if needed -> select intended component -> move clip"
+  common_mistake: "Unlinking every clip globally, then losing sync later in the edit."
+  related_entries: [edit_audio_video_out_of_sync]
+  manual_reference: "Linking and Unlinking Clips; Linked Selection"
+
+- id: edit_audio_video_out_of_sync
+  page: edit
+  category: editing-audio
+  symptom_phrases:
+    - "the audio is out of sync"
+    - "the sound does not match the picture"
+    - "the dialogue comes before the mouth moves"
+    - "audio slowly drifts away from video"
+  project_state_signals: []
+  diagnosis: >
+    Constant offset and progressive drift have different causes. A fixed offset
+    is usually a moved clip; drift often points to mismatched frame rates, sample
+    rates, or an incorrectly interpreted source.
+  tool_or_technique: "Timeline sync inspection, clip linking, and source properties"
+  explanation: >
+    Compare a clear visual event with its sound at the beginning and later in the
+    clip. If the offset stays constant, realign and relink the clips. If it grows
+    over time, stop nudging individual edits and inspect source frame-rate and
+    audio settings before rebuilding sync.
+  step_pointer: "Edit page -> compare sync at start and later point -> identify fixed offset or drift -> realign or inspect source settings"
+  common_mistake: "Correcting progressive drift with a single nudge at the start of the timeline."
+  related_entries: [edit_linked_clips_move_together, edit_multicam_angles_out_of_sync]
+  manual_reference: "Syncing Audio and Video; Clip Attributes"
+
+- id: edit_audio_cut_abrupt
+  page: edit
+  category: editing-audio
+  symptom_phrases:
+    - "the audio cuts too suddenly"
+    - "my dialogue jumps at the cut"
+    - "the music stops abruptly"
+    - "how do I make the sound change smoother"
+  project_state_signals: []
+  diagnosis: >
+    Picture cuts can be visually acceptable while the audio change exposes the
+    edit. Abrupt level, ambience, or waveform changes need their own treatment.
+  tool_or_technique: "Audio crossfades, short fades, J cuts and L cuts"
+  explanation: >
+    Listen through the cut without watching it. Use a short crossfade for a
+    continuous sound, or let dialogue/audio lead or trail the picture with a J
+    or L cut. Match room tone beneath dialogue edits rather than relying on a
+    long fade to hide missing ambience.
+  step_pointer: "Edit page -> listen across edit -> add short audio fade/crossfade or create J/L cut -> review at normal volume"
+  common_mistake: "Using a long fade that makes dialogue sound artificial instead of fixing the edit timing."
+  related_entries: [edit_cuts_feel_jarring, edit_audio_video_out_of_sync]
+  manual_reference: "Audio Transitions; J Cuts and L Cuts"
+
+- id: edit_insert_overwrite_confusion
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "adding a clip replaced my existing footage"
+    - "why did Resolve move everything down the timeline"
+    - "I want to put a clip in without overwriting anything"
+    - "what is the difference between insert and overwrite"
+  project_state_signals: []
+  diagnosis: >
+    Insert and overwrite are intentionally different edit operations. Insert
+    creates room and shifts later clips; overwrite replaces the target range.
+  tool_or_technique: "Insert and overwrite edit controls; track targeting"
+  explanation: >
+    Use Insert when the new clip should push later material forward. Use Overwrite
+    only when replacing the content under the playhead is intended. Before either
+    operation, confirm the destination video and audio tracks are targeted.
+  step_pointer: "Edit page -> set destination track targets -> choose Insert or Overwrite -> perform edit"
+  common_mistake: "Using overwrite as a general add-clip command and unintentionally replacing an existing shot."
+  related_entries: [edit_wrong_track_targeting]
+  manual_reference: "Insert Edits; Overwrite Edits; Track Targeting"
+
+- id: edit_wrong_track_targeting
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "my clip went onto the wrong track"
+    - "Resolve keeps adding video to V2 instead of V1"
+    - "my audio is going to the wrong place"
+    - "why is the edit landing on a different track"
+  project_state_signals:
+    - "Edit: video track"
+  diagnosis: >
+    Track targeting determines where an Insert or Overwrite edit lands. Source
+    patching and destination track targets can look similar but serve different
+    parts of the edit decision.
+  tool_or_technique: "Source patching and destination track targeting controls"
+  explanation: >
+    Before placing a clip, identify the desired destination track and enable its
+    target. Disable targets on tracks that should not receive the edit. This is
+    especially important when maintaining separate dialogue, music, titles, or
+    B-roll layers.
+  step_pointer: "Edit page -> timeline track header -> set destination target -> insert/overwrite clip"
+  common_mistake: "Dragging clips repeatedly without checking the highlighted destination targets."
+  related_entries: [edit_insert_overwrite_confusion, edit_broll_covers_main_video]
+  manual_reference: "Track Targeting; Source Patching"
+
+- id: edit_broll_covers_main_video
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "my B-roll is covering the main video"
+    - "I cannot see the clip underneath"
+    - "why does the top track hide everything below it"
+    - "my title or overlay replaced the picture"
+  project_state_signals:
+    - "Edit: video track"
+  diagnosis: >
+    Video tracks are composited from top to bottom. An opaque clip on a higher
+    track hides lower tracks for its duration.
+  tool_or_technique: "Video track stacking, clip opacity, and composite controls"
+  explanation: >
+    Put B-roll or graphics on higher video tracks only where they should be
+    visible. For overlays, use transparency, cropping, or an appropriate
+    composite mode. If the upper clip should not appear yet, trim or move it
+    rather than disabling the entire underlying track.
+  step_pointer: "Edit page -> inspect upper video tracks -> trim/move upper clip or adjust opacity/composite settings"
+  common_mistake: "Looking for a missing lower clip when it is simply covered by an opaque higher track."
+  related_entries: [edit_wrong_track_targeting, edit_video_track_disabled]
+  manual_reference: "Video Track Layering; Composite Modes and Opacity"
+
+- id: edit_clip_speed_unexpected
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "my clip is playing too fast"
+    - "why is this video in slow motion"
+    - "the timing changed after I edited the clip"
+    - "my clip speed is wrong"
+  project_state_signals: []
+  diagnosis: >
+    Unexpected duration can come from a deliberate retime setting or from source
+    footage whose frame rate was interpreted incorrectly when imported.
+  tool_or_technique: "Change Clip Speed, Retime Controls, and Clip Attributes"
+  explanation: >
+    First check whether the clip has a visible retime setting. If it does not,
+    compare its source frame rate with the timeline frame rate and inspect Clip
+    Attributes. Correct interpretation before making creative speed changes so
+    sync and duration stay predictable.
+  step_pointer: "Edit page -> select clip -> inspect Retime Controls -> check Clip Attributes/frame rate if needed"
+  common_mistake: "Applying another speed change to compensate for incorrectly interpreted source footage."
+  related_entries: [edit_audio_video_out_of_sync]
+  manual_reference: "Retime Controls; Change Clip Speed; Clip Attributes"
+
+- id: edit_media_offline
+  page: edit
+  category: media-management
+  symptom_phrases:
+    - "my clips say media offline"
+    - "Resolve cannot find my video files"
+    - "my timeline has red media offline screens"
+    - "I moved my files and now the edit is broken"
+  project_state_signals: []
+  diagnosis: >
+    The project stores references to media locations, not necessarily the media
+    itself. Moving, renaming, disconnecting, or changing permission to source
+    folders can break those references.
+  tool_or_technique: "Relink Selected Clips and Media Storage path review"
+  explanation: >
+    Confirm the source drive is connected and the files still exist, then relink
+    the affected clips to the folder containing the original media. Keep an
+    organized project-media folder structure so future moves preserve relative
+    locations whenever possible.
+  step_pointer: "Media Pool -> select offline clips -> Relink Selected Clips -> choose original media folder"
+  common_mistake: "Re-importing replacement files before attempting a relink, which can create duplicate media references."
+  related_entries: []
+  manual_reference: "Relinking Media; Media Management"
+
+- id: edit_multicam_angles_out_of_sync
+  page: edit
+  category: multicam
+  symptom_phrases:
+    - "my multicam angles are not lined up"
+    - "the camera switches happen at the wrong moment"
+    - "my multicam clip is out of sync"
+    - "the audio does not match the camera angle"
+  project_state_signals: []
+  diagnosis: >
+    A multicam edit depends on all source angles sharing a reliable sync point.
+    If the initial alignment is wrong, every live switch will remain offset.
+  tool_or_technique: "Multicam clip sync by waveform, timecode, or in-point"
+  explanation: >
+    Identify the best common reference: matching timecode when available, a clear
+    waveform event for scratch audio, or a visual in-point such as a clap. Verify
+    alignment before making switches so you are not compensating for a flawed
+    multicam setup during the edit.
+  step_pointer: "Media Pool -> open multicam setup -> verify sync method and common reference -> review angle alignment"
+  common_mistake: "Fixing each angle switch manually instead of correcting the multicam source alignment."
+  related_entries: [edit_audio_video_out_of_sync]
+  manual_reference: "Creating and Editing Multicam Clips"
+
+- id: edit_markers_not_helping
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "how do I mark a place to come back to"
+    - "I keep losing important moments in the timeline"
+    - "how do I leave notes on an edit"
+    - "I need to flag this part for later"
+  project_state_signals: []
+  diagnosis: >
+    Editorial notes need to stay attached to a time or clip; relying on memory
+    makes review and revision work slower and less reliable.
+  tool_or_technique: "Timeline and clip markers"
+  explanation: >
+    Add markers at edit points, problem frames, or review notes and name them by
+    the action needed. Use consistent colors sparingly—for example, one color for
+    client notes and another for technical fixes—so the timeline remains readable.
+  step_pointer: "Edit page -> park playhead or select clip -> add marker -> name note and assign purposeful color"
+  common_mistake: "Using marker colors without names, leaving no indication of what needs attention."
+  related_entries: [edit_duplicate_timeline_before_revisions]
+  manual_reference: "Using Markers in the Timeline"
+
+- id: edit_duplicate_timeline_before_revisions
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "I want to try a new edit without losing the old one"
+    - "how do I make a backup of my timeline"
+    - "I need a second version of this cut"
+    - "how do I compare two edits"
+  project_state_signals: []
+  diagnosis: >
+    Significant editorial experiments are safer when isolated from the approved
+    cut. A separate timeline preserves a reversible point of comparison.
+  tool_or_technique: "Timeline duplication and clear version naming"
+  explanation: >
+    Duplicate the current timeline before major structural changes and use names
+    that identify the version and purpose. Keep the original intact until the new
+    cut has been reviewed; this makes it possible to compare pacing and restore
+    an earlier decision without reconstructing it.
+  step_pointer: "Media Pool -> right-click timeline -> Duplicate Timeline -> rename version -> edit duplicate"
+  common_mistake: "Making experimental changes directly in the only approved timeline."
+  related_entries: [edit_markers_not_helping]
+  manual_reference: "Managing Timelines; Duplicating Timelines"
+
+- id: edit_titles_not_visible
+  page: edit
+  category: titles-subtitles
+  symptom_phrases:
+    - "my title is not showing"
+    - "I added text but cannot see it"
+    - "my subtitle disappeared"
+    - "why is my overlay missing"
+  project_state_signals:
+    - "Edit: video track"
+  diagnosis: >
+    Titles, subtitles, and overlays must be present at the playhead and on an
+    enabled visible track. Their duration and layer order often explain why they
+    appear missing.
+  tool_or_technique: "Title/subtitle duration, track visibility, and layer order"
+  explanation: >
+    Confirm the playhead is inside the title's clip range, then verify its track
+    is enabled. Check whether another opaque element on a higher track covers it
+    and use the Inspector to confirm the title's opacity and text are set as
+    intended.
+  step_pointer: "Edit page -> place playhead on title -> check enabled track and duration -> inspect layer order and Inspector"
+  common_mistake: "Recreating the title before checking whether the playhead is outside its duration."
+  related_entries: [edit_video_track_disabled, edit_broll_covers_main_video]
+  manual_reference: "Adding Titles; Working with Subtitles"
+
+- id: edit_audio_track_disabled
+  page: edit
+  category: editing-audio
+  symptom_phrases:
+    - "I can see the waveform but cannot hear audio"
+    - "my timeline has no sound"
+    - "why is this audio track silent"
+    - "the clip plays but the sound is missing"
+  project_state_signals:
+    - "Edit: audio track"
+    - "is disabled"
+  diagnosis: >
+    Audio can exist on the timeline while its entire track is disabled. That is a
+    track-state issue, separate from clip gain, monitoring, or source decoding.
+  tool_or_technique: "Audio-track enable control and track header inspection"
+  explanation: >
+    Check the affected audio track header first, then confirm the clip itself has
+    a visible waveform and the correct output device is selected. If one track is
+    silent while others play, focus on that track's enabled state before changing
+    clip levels or re-importing media.
+  step_pointer: "Edit page -> audio track header -> enable affected track -> verify waveform and playback"
+  common_mistake: "Raising clip gain to solve an audio track that is disabled."
+  related_entries: [edit_audio_cut_abrupt]
+  manual_reference: "Timeline Track Controls; Audio Track Enable"
+
+- id: edit_playback_stutters
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "my timeline keeps lagging"
+    - "playback is choppy"
+    - "Resolve cannot play this smoothly"
+    - "the playhead stops while I am editing"
+  project_state_signals: []
+  diagnosis: >
+    Choppy playback means the system cannot decode, process, or display the
+    current timeline fast enough in real time. It does not automatically mean the
+    exported result will have the same issue.
+  tool_or_technique: "Proxy Mode, optimized media, render cache, and timeline playback resolution"
+  explanation: >
+    Reduce the workload before changing the edit: use Proxy Mode or optimized
+    media for demanding source formats, lower timeline playback resolution, and
+    let Resolve cache effects-heavy sections. Identify whether the slowdown occurs
+    on one source clip, an effect, or the whole timeline.
+  step_pointer: "Playback menu -> choose Proxy Mode or lower timeline resolution -> enable Smart Render Cache -> retest section"
+  common_mistake: "Exporting repeatedly to judge whether an editing-playback performance problem is fixed."
+  related_entries: [edit_proxy_media_confusion, edit_clip_speed_unexpected]
+  manual_reference: "Improving Performance; Proxy Mode; Render Cache"
+
+- id: edit_proxy_media_confusion
+  page: edit
+  category: media-management
+  symptom_phrases:
+    - "my proxy looks different from the original"
+    - "why is Resolve using a low quality version"
+    - "I cannot tell if I am editing the proxy or original"
+    - "my timeline looks soft while editing"
+  project_state_signals: []
+  diagnosis: >
+    Proxy media is intentionally a lighter representation used to improve editing
+    performance. It should not be confused with the source media or final render
+    quality.
+  tool_or_technique: "Proxy Handling and Proxy Mode controls"
+  explanation: >
+    Confirm whether proxy media is attached and whether Proxy Mode is enabled.
+    Use the original source for critical color and focus judgment, but retain
+    proxies for smoother editorial work. If proxy and source differ in framing or
+    timing, relink or regenerate the proxy instead of grading the mismatch.
+  step_pointer: "Playback menu -> inspect Proxy Handling/Proxy Mode -> toggle to original for review -> verify proxy linkage"
+  common_mistake: "Deleting useful proxies because their lower resolution is mistaken for a damaged original."
+  related_entries: [edit_playback_stutters]
+  manual_reference: "Proxy Media; Proxy Mode"
+
+- id: edit_motion_looks_juddery
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "my video looks choppy even when playback is smooth"
+    - "the motion has a weird stutter"
+    - "this clip does not match the timeline frame rate"
+    - "why does movement look jerky"
+  project_state_signals: []
+  diagnosis: >
+    Motion judder can be a frame-rate interpretation or timeline-conformance
+    issue, which is different from a computer failing to play the timeline in
+    real time.
+  tool_or_technique: "Clip Attributes, timeline frame rate, and Retime Process"
+  explanation: >
+    Check the source clip frame rate and compare it with the timeline frame rate.
+    If they differ, review how Resolve is conforming the clip and choose an
+    appropriate retime process only after confirming the source was interpreted
+    correctly. Test motion on a clear pan or moving subject.
+  step_pointer: "Media Pool -> inspect clip frame rate -> compare Project Settings timeline rate -> review Retime Process"
+  common_mistake: "Treating cadence judder as general performance lag and only lowering playback resolution."
+  related_entries: [edit_playback_stutters, edit_clip_speed_unexpected]
+  manual_reference: "Timeline Frame Rate; Clip Attributes; Retime and Scaling"
+
+- id: edit_source_vs_timeline_viewer_confusion
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "why is the left viewer different from the right viewer"
+    - "I can see the clip but not my timeline edit"
+    - "which viewer am I looking at"
+    - "why does one screen show media and the other is black"
+  project_state_signals:
+    - "Edit: playhead timecode"
+  diagnosis: >
+    The Source viewer shows loaded source media, while the Timeline viewer shows
+    the composited result at the current playhead. They answer different questions
+    and can legitimately show different images.
+  tool_or_technique: "Source viewer versus Timeline viewer"
+  explanation: >
+    Use the Source viewer to choose in/out points from a clip, and the Timeline
+    viewer to judge the edit, layer order, titles, and transitions. When testing
+    whether an edit is visible, put the playhead over the timeline clip and use
+    the Timeline viewer rather than relying on the source preview.
+  step_pointer: "Edit page -> identify Source and Timeline viewers -> park playhead over clip -> review Timeline viewer"
+  common_mistake: "Assuming a black Timeline viewer means the source file is missing when only the playhead is outside the clip."
+  related_entries: [edit_clip_not_visible_at_playhead, edit_broll_covers_main_video]
+  manual_reference: "Source Viewer and Timeline Viewer"
+
+- id: edit_compound_clip_hides_contents
+  page: edit
+  category: editing-timeline
+  symptom_phrases:
+    - "I cannot edit the clips inside this clip"
+    - "my timeline clip contains other clips"
+    - "why did several clips turn into one clip"
+    - "how do I get back inside a compound clip"
+  project_state_signals: []
+  diagnosis: >
+    A compound clip intentionally packages several timeline items as one parent
+    item. It simplifies the main timeline but hides the child edits until opened.
+  tool_or_technique: "Open in Timeline and compound-clip management"
+  explanation: >
+    Open the compound clip in its own timeline to change its internal edits, then
+    return to the parent timeline to review the result in context. Use compound
+    clips for reusable grouped edits, not as a substitute for simple track
+    organization.
+  step_pointer: "Edit page -> right-click compound clip -> Open in Timeline -> edit contents -> return to parent timeline"
+  common_mistake: "Flattening or rebuilding a compound clip before checking whether its child timeline can simply be opened."
+  related_entries: [edit_duplicate_timeline_before_revisions]
+  manual_reference: "Creating and Editing Compound Clips"

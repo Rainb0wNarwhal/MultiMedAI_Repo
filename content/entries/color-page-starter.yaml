@@ -1,0 +1,1170 @@
+- id: skin_tone_hue_shift
+  category: skin-tone
+  symptom_phrases:
+    - "skin looks weird"
+    - "skin tones look sickly"
+    - "faces look off but exposure seems fine"
+    - "this doesn't look natural"
+  project_state_signals:
+    - "no vectorscope skin-tone line reference used"
+    - "hue vs sat curve at default"
+  diagnosis: >
+    Exposure and contrast can be correct while hue is still shifted - the eye is
+    extremely sensitive to skin tone hue specifically, more than almost any other
+    color in a frame. A shift too small to notice on a gray card becomes obvious
+    on a face.
+  tool_or_technique: >
+    Vectorscope skin tone indicator (the diagonal "I-line") + Hue vs Hue curve in
+    Color Warper or Curves palette.
+  explanation: >
+    The vectorscope has a built-in reference line (sometimes called the I-line)
+    that correct skin tones cluster near, regardless of a person's actual skin
+    color or lighting. If your skin tone vector sits noticeably off that line,
+    that's your signal - not your eyes second-guessing themselves. Use Hue vs Hue
+    in the Curves palette to rotate just the skin-tone hue range back toward the
+    line without touching other colors in the shot.
+  step_pointer: "Color page -> open Vectorscope -> check skin tone line -> Curves palette -> Hue vs Hue"
+  common_mistake: >
+    Users often reach for saturation or overall color temperature first, which
+    shifts everything in the frame, not just the problem hue range.
+  related_entries: [qualifier_isolate_skin]
+  manual_reference: "Using Scopes / Vectorscope; Primary Color Grading Controls"
+
+- id: shot_matching_mismatch
+  category: matching
+  symptom_phrases:
+    - "doesn't match the other shot"
+    - "cuts look jarring"
+    - "this scene looks inconsistent"
+  project_state_signals:
+    - "adjacent timeline clips have significantly different node graphs"
+    - "no shared grade / group applied across scene"
+  diagnosis: >
+    Two shots from the same scene, even shot minutes apart, rarely have identical
+    camera settings, so they need deliberate matching - this isn't usually solved
+    by editing each shot in isolation from your gut sense of "looks right."
+  tool_or_technique: >
+    Gallery stills + Split Screen compare, or a Group with a shared grade.
+  explanation: >
+    Grab a still of your reference shot (the one that looks "right") and use
+    Split Screen in the viewer to place it side-by-side with the shot you're
+    matching. This turns a vague "something's off" into a direct comparison you
+    can read on scopes. For a whole scene, put all its clips in a Group so a
+    base grade applies to all of them consistently, with per-clip tweaks layered
+    on top in individual node trees.
+  step_pointer: "Gallery -> grab still of reference shot -> Viewer -> Split Screen -> compare on Parade scope"
+  common_mistake: >
+    Adjusting purely by eye without the split-screen or scope comparison - the
+    eye adapts to whichever shot it's looking at and loses the reference point.
+  related_entries: [scopes_reading_intro, node_structure_groups]
+  manual_reference: "Comparing Clips / Gallery Stills; Using Groups"
+
+- id: banding_in_gradients
+  category: noise-artifacts
+  symptom_phrases:
+    - "the sky looks blotchy"
+    - "banding in the background"
+    - "stepping in the gradient"
+  project_state_signals:
+    - "heavy curve/gamma adjustment on 8-bit source"
+    - "no dither/film grain node in tree"
+  diagnosis: >
+    Banding usually comes from stretching a limited bit-depth image too hard -
+    common when the source is 8-bit or heavily compressed, and a grade pushes
+    contrast or saturation aggressively in a smooth gradient area like sky.
+  tool_or_technique: >
+    Add a subtle Film Grain / Dither node after the grade, and check bit depth
+    in Project Settings.
+  explanation: >
+    Banding is a bit-depth problem, not something a color tool alone fixes.
+    Adding a small amount of grain or dither breaks up the visible steps by
+    adding noise the eye reads as smooth texture instead. It's a real technique
+    used constantly in professional finishing, not a "cheat." Confirm your
+    project's color science and output bit depth aren't compounding the issue.
+  step_pointer: "Color page -> add new serial node after your grade -> Resolve FX -> Film Grain (low amount)"
+  common_mistake: >
+    Trying to fix banding by softening the grade itself, which sacrifices the
+    look you actually wanted instead of addressing the underlying bit-depth cause.
+  related_entries: []
+  manual_reference: "Resolve FX Filters / Film Grain; Project Settings - Color Science"
+
+- id: tracking_drift
+  category: tracking
+  symptom_phrases:
+    - "the window keeps slipping off"
+    - "tracking looks wrong halfway through the clip"
+    - "mask doesn't follow the subject"
+  project_state_signals:
+    - "tracker points concentrated on low-contrast/featureless region"
+    - "single tracking pass across occlusion point"
+  diagnosis: >
+    Point trackers need contrast and consistent visibility to follow - they
+    commonly fail across occlusions (subject passes behind something) or on
+    low-texture regions like plain skin or smooth walls.
+  tool_or_technique: >
+    Tracker palette - switch tracking region/points, or split the track into
+    segments across the occlusion.
+  explanation: >
+    Rather than one continuous track across the whole clip, break tracking into
+    segments at the point where it starts drifting - track up to the occlusion,
+    then start a fresh track after it. Also try repositioning tracker points onto
+    higher-contrast detail near your subject (collar edge, hairline) rather than
+    flat skin or fabric.
+  step_pointer: "Color page -> Tracker palette -> Window tracker -> adjust tracking points -> re-track from drift point"
+  common_mistake: >
+    Re-running the same track repeatedly expecting a different result instead of
+    changing where the tracker points sit or segmenting the track.
+  related_entries: []
+  manual_reference: "Tracking Windows; Point and Palette Trackers"
+
+- id: flat_lacks_contrast
+  category: contrast
+  symptom_phrases:
+    - "looks flat"
+    - "no pop"
+    - "lacks depth"
+    - "doesn't look cinematic"
+  project_state_signals:
+    - "single primary wheels node, no contrast curve, log gamma not converted"
+  diagnosis: >
+    Log/flat camera profiles are intentionally low-contrast to preserve dynamic
+    range for grading later - if no contrast has been reintroduced after the
+    camera-native LUT/color space transform, the image will read as flat by design.
+  tool_or_technique: >
+    Color Space Transform node (if not already applied) + Custom Curve for contrast.
+  explanation: >
+    Contrast should generally be one of the first grading decisions, applied
+    after correctly interpreting the camera's log footage into a working color
+    space. An S-curve in the Curves palette lifts highlights and lowers shadows
+    slightly to build punch, while a separate node for creative look (color,
+    saturation) keeps that adjustment isolated and easy to undo or refine later.
+  step_pointer: "Color page -> confirm Color Space Transform node exists -> add new node -> Curves -> gentle S-curve"
+  common_mistake: >
+    Reaching for saturation to fix a contrast problem - it makes colors more
+    intense without adding the depth/dimensionality that's actually missing.
+  related_entries: [node_structure_groups]
+  manual_reference: "Color Space Transform; Primary Bars - Contrast"
+
+- id: skin_tone_overly_red
+  category: skin-tone
+  symptom_phrases:
+    - "skin looks red"
+    - "faces look too warm"
+    - "skin has a magenta cast"
+    - "everything is rosy"
+  project_state_signals:
+    - "vectorscope skin-tone cluster sits above skin line"
+    - "hue vs hue/skin tone adjustment pushed too far"
+  diagnosis: >
+    A skin tone problem is often not simply a white balance issue; it can be a
+    hue imbalance in the skin range itself. When the vectorscope skin-tone cluster
+    sits too far toward magenta or red, the face looks warm and unhealthy even if
+    exposure is otherwise okay.
+  tool_or_technique: >
+    Vectorscope skin tone indicator + Hue vs Hue or HSL qualifier restricted to
+    skin range.
+  explanation: >
+    Start by checking where the skin-tone vector sits relative to the skin target
+    line, not by adjusting the whole image warmer or cooler. Use Hue vs Hue or a
+    controlled skin qualifier to pull only the skin hue cluster back toward the
+    neutral skin target. Avoid broad white balance changes unless the entire shot
+    is uniformly off, because that can make other colors look wrong.
+  step_pointer: "Color page -> Vectorscope -> skin tone line -> Hue vs Hue or skin qualifier"
+  common_mistake: >
+    Turning up warmth globally to make faces look "alive" — that pushes all skin
+    tones and often creates a muddy, red-heavy result.
+  related_entries: [skin_tone_hue_shift, scopes_reading_intro]
+  manual_reference: "Vectorscope; Color Warper / Curves; Skin Tone Control"
+
+- id: shadows_are_crushed
+  category: contrast
+  symptom_phrases:
+    - "shadows are blocked up"
+    - "the image looks muddy"
+    - "everything in the dark areas is lost"
+    - "the blacks are too dense"
+  project_state_signals:
+    - "lift is too low"
+    - "gamma or log curve pushed with no shadow recovery"
+  diagnosis: >
+    The image may have strong contrast but insufficient tonal separation in the
+    lower end. When shadow values are pushed too aggressively, detail collapses
+    into a dense mass and the frame loses depth.
+  tool_or_technique: >
+    Lift / Offset / Shadow controls, Curves, or a gentle S-curve with shadow
+    recovery.
+  explanation: >
+    If the lower tonal range is being compressed too hard, lifting the shadows
+    slightly and preserving separation is more effective than adding more
+    saturation or contrast. A carefully shaped curve can recover detail in the
+    darkest region without blowing out the highlights.
+  step_pointer: "Color page -> Curves or Lift -> adjust shadows -> check waveform for crushed blacks"
+  common_mistake: >
+    Increasing contrast to create "cinematic" depth when the real issue is lost
+    shadow detail. That makes the frame look more dramatic but less readable.
+  related_entries: [flat_lacks_contrast, scopes_reading_intro]
+  manual_reference: "Curves; Lift/Gamma/Gain; Waveform Monitor"
+
+- id: highlights_are_clipped
+  category: contrast
+  symptom_phrases:
+    - "highlights are blown out"
+    - "the whites are too bright"
+    - "faces look washed out"
+    - "the sky is clipping"
+  project_state_signals:
+    - "waveform touches the top of the range"
+    - "highlight rolloff is too aggressive"
+  diagnosis: >
+    When highlights are driven too hard, the tonal range compresses at the top and
+    detail disappears. That commonly happens when the grade is pushing gain or
+    contrast without respecting the image's exposure and dynamic range.
+  tool_or_technique: >
+    Waveform monitor, highlight controls, and a gentle highlight rolloff or
+    highlight curve adjustment.
+  explanation: >
+    Use the waveform to identify where the image clips, then reduce the affected
+    tonal range before adding more contrast. Sometimes the fix is simply to pull
+    down the highlights or soften the upper curve instead of touching the whole
+    image. A careful highlight rolloff keeps the subject readable without flattening
+    the rest of the frame.
+  step_pointer: "Color page -> Waveform -> identify clipping -> Curves or Highlights -> pull down upper range"
+  common_mistake: >
+    Treating clipping as a saturation problem by pushing color harder. The issue
+    is lost detail at the top of the tonal range, not a lack of color richness.
+  related_entries: [flat_lacks_contrast, scopes_reading_intro]
+  manual_reference: "Waveform Monitor; Curves; Highlight Controls"
+
+- id: muddy_colors_after_grade
+  category: saturation
+  symptom_phrases:
+    - "the colors look dirty"
+    - "everything looks muddy"
+    - "I lost separation between colors"
+    - "the image feels flat and lifeless"
+  project_state_signals:
+    - "primary saturation pushed too low"
+    - "multiple colors desaturated together without a targeted look"
+  diagnosis: >
+    Muddy color usually means the image has lost separation in the chroma range.
+    This can happen when the grade is trying to fix a tone problem by pulling down
+    saturation globally, turning the entire frame into a grayish wash.
+  tool_or_technique: >
+    HSL qualifier, saturation controls, and selective color adjustments rather than
+    a blanket global saturation pull.
+  explanation: >
+    Instead of reducing all saturation at once, isolate the colors you actually
+    want to change. A global reduction often makes the whole image feel flat,
+    while selective color work keeps contrast and separation. If the shots look
+    muddy, pay attention to both the hue and saturation positions in the vectorscope
+    instead of guessing by eye.
+  step_pointer: "Color page -> HSL Qualifier -> isolate color ranges -> adjust saturation selectively"
+  common_mistake: >
+    Trying to fix a muddy frame by increasing global contrast. That can add
+    sharpness without returning separation or radiance to the colors.
+  related_entries: [node_structure_groups, scopes_reading_intro]
+  manual_reference: "HSL Qualifier; Saturation Controls; Vectorscope"
+
+- id: white_balance_feels_wrong
+  category: matching
+  symptom_phrases:
+    - "everything is too cool"
+    - "white looks off"
+    - "the frame looks blue or orange"
+    - "the shot feels incorrectly balanced"
+  project_state_signals:
+    - "no neutral reference object in frame"
+    - "white balance not adjusted before contrast or saturation work"
+  diagnosis: >
+    The first fix is often not a creative grade but a neutral white balance issue.
+    If the frame is globally biased toward blue, orange, or magenta, every other
+    adjustment will be fighting the wrong baseline.
+  tool_or_technique: >
+    White balance controls, Color Warper, or neutral reference point using true
+    gray/white elements in frame.
+  explanation: >
+    Start with the neutral reference in the image — a white object, neutral wall,
+    or gray card — and correct the balance before making any creative changes.
+    Once the baseline is neutral, a grade for mood or contrast becomes much more
+    reliable. If the frame is too blue or orange while skin tone is also off, white
+    balance is often the root cause rather than a creative color treatment.
+  step_pointer: "Color page -> identify neutral reference -> White Balance / Color Temp -> adjust before creative grading"
+  common_mistake: >
+    Adding more contrast or saturation to mask a wrong white balance. It may look
+    dramatic but the underling color cast is still there.
+  related_entries: [skin_tone_hue_shift, shot_matching_mismatch]
+  manual_reference: "White Balance; Color Temperature; Color Science"
+
+- id: colors_look_unnatural_after_lut
+  category: saturation
+  symptom_phrases:
+    - "the LUT made everything look fake"
+    - "colors feel too processed"
+    - "the look is too heavy after the LUT"
+    - "I lost realism"
+  project_state_signals:
+    - "LUT applied before proper tonal balance"
+    - "saturation or hue pushed beyond camera footage range"
+  diagnosis: >
+    LUTs can look dramatic at first but often over-saturate or over-sharpen a shot
+    if the image is not first balanced and correctly exposed. The result is a stylized
+    grade that reads as artificial rather than natural.
+  tool_or_technique: >
+    LUT node, then evaluate with scopes, then reduce saturation or adjust balance
+    with selective curves.
+  explanation: >
+    A LUT is a starting point, not a final answer. Apply it, then check the image
+    on scopes and compare with natural skin tones and neutral reference objects.
+    If the LUT introduces a non-natural cast, offset the grade with a subtle contrast
+    reduction or selective saturation correction instead of stacking more aggressive
+    changes on top.
+  step_pointer: "Color page -> LUT node -> check scopes -> refine with curves / selective saturation"
+  common_mistake: >
+    Assuming a stronger LUT will always look more cinematic. Many times it just
+    pushes the image farther away from the source reality.
+  related_entries: [shot_matching_mismatch, skin_tone_overly_red]
+  manual_reference: "LUTs; Color Management; Curves"
+
+- id: image_looks_noisy_in_shadow
+  category: noise-artifacts
+  symptom_phrases:
+    - "the shadows are noisy"
+    - "there's grain in the dark areas"
+    - "the shadow detail looks messy"
+    - "everything is speckled in the blacks"
+  project_state_signals:
+    - "shadow lift or gain increased heavily"
+    - "no grain or cleanup node used"
+  diagnosis: >
+    Raising the shadow range often exposes noise or sensor artifacts that were
+    previously hidden in the darker tonal values. The problem is not always a broken
+    image — it is a tone treatment that brought the noise into visibility.
+  tool_or_technique: >
+    Noise reduction, grain, or controlled shadow lift to keep detail without
+    amplifying noise.
+  explanation: >
+    If the shadow region is noisy, fix it in the tonal range rather than trying to
+    hide it with a blanket desaturation or blur. A subtle noise reduction pass can
+    clean up the darker values while preserving texture and filmic character. You
+    can also add a controlled film grain layer after cleanup to keep the image from
+    feeling artificial or flat.
+  step_pointer: "Color page -> Noise Reduction / Film Grain -> adjust shadows specifically -> check waveform"
+  common_mistake: >
+    Pulling the shadows too far down and then adding heavy smoothing, which makes
+    the frame feel plasticky instead of cinematic.
+  related_entries: [banding_in_gradients, flat_lacks_contrast]
+  manual_reference: "Noise Reduction; Film Grain; Shadow Detail"
+
+- id: scope_numbers_look_wrong
+  category: scopes-reading
+  symptom_phrases:
+    - "I don't know what the scopes mean"
+    - "why are my scopes saying something different from my eyes"
+    - "the image looks good but the scopes say it's wrong"
+    - "I can't tell if the image is clipped or balanced"
+  project_state_signals:
+    - "user is grading by eye without reference"
+    - "no waveform or vectorscope monitoring configured"
+  diagnosis: >
+    The eye adapts to color and brightness quickly, which makes it unreliable for
+    objective grading decisions. Scopes provide a consistent baseline for exposure,
+    saturation, and hue relationships, especially when matching or fixing a scene.
+  tool_or_technique: >
+    Waveform, vectorscope, and histogram used together as a diagnostic set.
+  explanation: >
+    Waveform tells you about luminance and clipping; vectorscope tells you about
+    hue and saturation relationships; histogram gives a quick distribution read of
+    tonal range. This is especially important when skin tones or matching shots are
+    not visually obvious. Learn to read a single scope before adjusting multiple
+    controls, because the eye alone will often tell you the wrong story.
+  step_pointer: "Color page -> open scopes -> compare waveform to skin tone / exposure -> use vectorscope for hue"
+  common_mistake: >
+    Grading to the monitor's perceived brightness instead of the actual numbers.
+    That works for brief checks, but not for consistent scene work.
+  related_entries: [scopes_reading_intro, skin_tone_hue_shift]
+  manual_reference: "Waveform Monitor; Vectorscope; Histogram"
+
+- id: image_looks_too_soft_after_cleanup
+  category: node-structure
+  symptom_phrases:
+    - "the image looks mushy"
+    - "everything got soft after the fix"
+    - "I blurred the shot by accident"
+    - "the grade looks less crisp"
+  project_state_signals:
+    - "too much blur or softness in cleanup or color plugins"
+    - "multiple corrections stacked without clear order"
+  diagnosis: >
+    A cleanup or color adjustment can inadvertently soften the frame when the node
+    order or effect strength is wrong. Softness is often a consequence of stacking
+    corrections without understanding which node is responsible.
+  tool_or_technique: >
+    Node tree order, isolate cleanup passes, and separate the creative look from
+    technical corrections.
+  explanation: >
+    Treat technical cleanup and creative grading as separate decisions. If a node
+    is softening the image, isolate it and reduce the effect or move it later in the
+    chain. A clean node tree helps you see exactly which move is causing the washout
+    or softness, and prevents the grade from becoming a black box.
+  step_pointer: "Color page -> separate cleanup node from creative grade -> inspect node stack order"
+  common_mistake: >
+    Adding a global blur or a heavy effect without isolating the problem. This can
+    make the picture seem less sharp everywhere rather than fixing the specific issue.
+  related_entries: [node_structure_groups, flat_lacks_contrast]
+  manual_reference: "Node Tree; Color Page Logic; Cleanup and Correction Order"
+
+- id: mismatch_after_cut_even_when_colors_match
+  category: matching
+  symptom_phrases:
+    - "the shots match but still feel different"
+    - "the colors are close but the cut still jars"
+    - "I matched the grade but the cut feels wrong"
+    - "the scene still doesn't feel consistent"
+  project_state_signals:
+    - "same white balance but different contrast or texture"
+    - "scene has different camera response or exposure"
+  diagnosis: >
+    Matching is not just about white balance or saturation. A cut can still feel
+    inconsistent if contrast, texture, sharpness, or the overall tonal curve differs
+    between shots, even when the hue relationships look close.
+  tool_or_technique: >
+    Split screen comparison, scene group, and tonal curve matching rather than only
+    color wheel balancing.
+  explanation: >
+    Compare the shots with split-view and look at shadow, midtone, and highlight
+    balance, not just the average color. A close match in hue but a different contrast
+    curve can still make a cut feel wrong. Grouping scene shots and adjusting at the
+    scene level keeps the visual grammar tighter and more consistent.
+  step_pointer: "Color page -> Split Screen -> compare tonal values -> adjust contrast/texture / node grouping"
+  common_mistake: >
+    Matching only on the face or only on the overall hue while ignoring the shape of
+    the contrast curve. That can hide the mismatch rather than fix it.
+  related_entries: [shot_matching_mismatch, node_structure_groups]
+  manual_reference: "Timeline Matching; Split Screen; Scene Grouping"
+
+- id: skin_tone_shift_in_log_shot
+  category: skin-tone
+  symptom_phrases:
+    - "skin looks off after the log conversion"
+    - "the footage looks flat and skin is weird"
+    - "the grading looks right but faces still read wrong"
+    - "this log footage has a strange skin cast"
+  project_state_signals:
+    - "camera log or raw footage with no color space transform"
+    - "skin tone cluster sits far from reference line"
+  diagnosis: >
+    Log footage can retain a color cast or wrong tonal interpretation when the source
+    is not correctly transformed for the working color space. This often shows up as
+    skin tones looking off even when the grade seems technically reasonable.
+  tool_or_technique: >
+    Color Space Transform node plus vectorscope and skin-tone target check.
+  explanation: >
+    If the image is coming from a log or RAW source, correct the working color space
+    before making any creative adjustments. Once the footage is normalized to the
+    correct color space, the skin tone cluster becomes much easier to read and adjust.
+    Without this step, the grade may be compensating for the wrong camera curve.
+  step_pointer: "Color page -> check Color Space Transform -> verify working color space -> then adjust skin tones"
+  common_mistake: >
+    Trying to fix a camera-log issue by pushing the overall grade harder. This can
+    worsen the skin cast while hiding the real source problem.
+  related_entries: [skin_tone_hue_shift, flat_lacks_contrast]
+  manual_reference: "Color Space Transform; Log Footage; Working Color Space"
+
+- id: contrast_too_harsh_for_skin
+  category: contrast
+  symptom_phrases:
+    - "skin looks too harsh"
+    - "faces look too contrasty"
+    - "the contrast is making the subject look fake"
+    - "the image has too much punch"
+  project_state_signals:
+    - "highlights and shadows pushed with strong S-curve"
+    - "skin tone waveform has very steep transitions"
+  diagnosis: >
+    A high-contrast grade exaggerates the tonal separation between the face, cheeks,
+    and shadows, making skin read as overly dramatic or unnatural. This often happens
+    when a global curve is used without checking the actual face tonality.
+  tool_or_technique: >
+    Tone mapping with a subtle S-curve, plus selective shadow and highlight control
+    focused on the subject rather than the whole frame.
+  explanation: >
+    For skin, contrast should feel controlled and believable. If the face starts to
+    look like a poster or a stencil, the tonal curve is too dramatic. Reduce the
+    overall contrast or soften the midtone slope, then refine the face region with
+    small, local adjustments instead of trying to fix the whole shot with one blunt
+    move.
+  step_pointer: "Color page -> Curves -> soften S-curve -> check skin tonality against waveform"
+  common_mistake: >
+    Increasing the overall contrast to make it feel more cinematic, which often makes
+    skin and features look too rigid and processed.
+  related_entries: [flat_lacks_contrast, skin_tone_hue_shift]
+  manual_reference: "Curves; Highlights and Shadows; Skin Tonal Balance"
+
+- id: color_cast_in_reference_shot
+  category: matching
+  symptom_phrases:
+    - "the reference shot has a color cast"
+    - "the match is good but still has a weird tint"
+    - "the scene has a green or orange tint"
+    - "the reference is inconsistent even when the exposure matches"
+  project_state_signals:
+    - "scene-wide cast appears only in reference shot"
+    - "matching by eye without neutral reference objects"
+  diagnosis: >
+    A color cast can persist even when exposure and contrast are close. If the scene
+    is being corrected by eye alone, the grade may end up copying the wrong color bias
+    instead of matching the neutral baseline.
+  tool_or_technique: >
+    Split screen, neutral reference object, and selective color balancing to correct the
+    underlying cast rather than copying the full look.
+  explanation: >
+    When a shot has a color cast, match the neutral references first. Look for gray,
+    white, or neutral surfaces and use them to correct the color bias before trying to
+    match the full creative style. This ensures you are not simply transferring an unwanted
+    tint from one shot to another.
+  step_pointer: "Color page -> Split Screen -> use neutral reference -> correct cast before contrast"
+  common_mistake: >
+    Matching the entire grade to a reference shot without checking whether the reference
+    itself has a color cast or tinted lighting.
+  related_entries: [shot_matching_mismatch, white_balance_feels_wrong]
+  manual_reference: "Matching Shots; White Balance; Color Balance Tools"
+
+- id: chroma_noise_in_saturated_regions
+  category: noise-artifacts
+  symptom_phrases:
+    - "the red/green colors look noisy"
+    - "saturated colors are grainy"
+    - "the color detail looks messy in bright areas"
+    - "the highlights are speckled in color"
+  project_state_signals:
+    - "heavy saturation boost in strong color patches"
+    - "no cleanup or noise reduction at the color stage"
+  diagnosis: >
+    Saturated areas and bright color regions often amplify image noise because the sensor
+    and codec are being pushed harder. A vibrant grade can expose grain that was hidden
+    before the color work.
+  tool_or_technique: >
+    Selective cleanup, noise reduction, and careful saturation control on noisy color
+    ranges rather than a global fix.
+  explanation: >
+    If the noise appears specifically in saturated regions, reduce the amount of color
+    added there rather than applying a heavy global noise reduction that can soften the
+    whole frame. The best fix is usually a targeted adjustment: lower the saturation in
+    the noisy channels without killing the rest of the image's energy.
+  step_pointer: "Color page -> isolate saturated region -> reduce color intensity -> use cleanup on noisy range"
+  common_mistake: >
+    Bringing up saturation everywhere to make the image lively, which makes any existing
+    noise much more noticeable.
+  related_entries: [image_looks_noisy_in_shadow, muddy_colors_after_grade]
+  manual_reference: "Noise Reduction; Saturation Controls; Color Detail"
+
+- id: color_splash_not_reading
+  category: saturation
+  symptom_phrases:
+    - "the color pop isn't working"
+    - "the accent color looks flat"
+    - "the subject colors are too subtle"
+    - "I wanted a color accent but it doesn't read"
+  project_state_signals:
+    - "highly saturated areas too close to neutral values"
+    - "saturation boost not isolated to the intended color range"
+  diagnosis: >
+    A color accent fails when it is not sufficiently separated from the rest of the frame.
+    If the chosen color sits too close to neighboring hues or gets buried in lighting, it
+    simply disappears into the environment instead of reading clearly.
+  tool_or_technique: >
+    HSL qualifier, selective saturation, and value separation in the accent color range.
+  explanation: >
+    Accent colors need enough separation in hue and brightness to read cleanly. If the
+    subject’s accent color blends into the environment, increase its isolation rather than
+    just boosting the whole image. This often means working in HSL or a targeted qualifier
+    and checking the color in the vectorscope for distinct separation.
+  step_pointer: "Color page -> isolate accent color -> adjust saturation and luminance -> check separation"
+  common_mistake: >
+    Over-saturating the entire frame to make the accent pop. That destroys realism and
+    flattenes the shot rather than making the accent read clearly.
+  related_entries: [muddy_colors_after_grade, scope_numbers_look_wrong]
+  manual_reference: "HSL Qualifier; Vectorscope; Selective Color"
+
+- id: skin_tone_ok_but_face_looks_flat
+  category: skin-tone
+  symptom_phrases:
+    - "skin is fine but the face still looks flat"
+    - "the face has no depth"
+    - "the skin is correct but the subject is boring"
+    - "the skin is neutral but the face still lacks life"
+  project_state_signals:
+    - "skin tone balanced but no contrast separation in face"
+    - "overall grade too linear and low-contrast"
+  diagnosis: >
+    A neutral skin tone does not guarantee the face has three-dimensionality. If the face
+    is flat, the issue is usually in the region’s contrast and tonal separation rather than
+    hue or saturation.
+  tool_or_technique: >
+    Gentle sculpting with highlight and shadow control, plus selective face contrast
+    rather than a full-frame grade.
+  explanation: >
+    Use the face itself as the reference. If skin tones are neutral but the cheeks, temples,
+    and jawline all collapse into the same tonal range, build separation there. A subtle
+    contrast or micro-shaping pass can restore depth without making the grade feel heavy.
+  step_pointer: "Color page -> identify face tonal range -> adjust local contrast -> preserve skin neutrality"
+  common_mistake: >
+    Adding warmth or saturation to make the face feel alive when the real problem is tonal
+    separation. That often makes the result more processed, not more dimensional.
+  related_entries: [skin_tone_hue_shift, shadows_are_crushed]
+  manual_reference: "Skin Tonal Balance; Curves; Shadow/Highlight Separation"
+
+- id: overcorrected_movie_look
+  category: contrast
+  symptom_phrases:
+    - "the image looks too stylized"
+    - "the grade looks like a movie LUT on everything"
+    - "I overdid the contrast and it feels fake"
+    - "the footage has too much drama"
+  project_state_signals:
+    - "strong contrast curve + heavy saturation + aggressive LUT"
+    - "no restraint in the base grade"
+  diagnosis: >
+    A stylized grade becomes overdone when the whole chain is pushed too hard at once.
+    LUTs, contrast curves, and saturation boosts stacked together can easily create a look
+    that is technically vibrant but emotionally flat or artificial.
+  tool_or_technique: >
+    Tone and mood decisions applied in layers: base balance, then contrast, then creative
+    style, rather than all at once.
+  explanation: >
+    The most convincing looks usually come from restraint. Build a neutral base first,
+    then bring in contrast or color as needed. If the frame feels stylized without being
+    intentional, pull back one stage of the chain rather than trying to fix it by stacking
+    more adjustments on top.
+  step_pointer: "Color page -> check node order -> pull back one aggressive step -> re-assess neutral base"
+  common_mistake: >
+    Chasing a dramatic look by stacking more LUT, more contrast, and more saturation at
+    once. It reduces the subtleties that make a grade feel natural.
+  related_entries: [colors_look_unnatural_after_lut, white_balance_feels_wrong]
+  manual_reference: "Color Management; LUTs; Curves; Contrast Reduction"
+
+- id: odd_hue_in_background_parts
+  category: saturation
+  symptom_phrases:
+    - "the background has a weird color tint"
+    - "the environment looks wrong"
+    - "there's an odd hue in the backdrop"
+    - "the color is okay on the subject but not in the background"
+  project_state_signals:
+    - "global grade applied without background separation"
+    - "subject isolated but environment remains in a different balance"
+  diagnosis: >
+    Background color issues are often the result of a global adjustment that was meant
+    for the subject but not the environment. If the environment is offset in hue or
+    saturation, the frame will feel mismatched even if the main subject appears fine.
+  tool_or_technique: >
+    Regional correction using a qualifier, background mask, or object-specific control.
+  explanation: >
+    Make the fix match where the problem is. If the subject is okay but the background
+    has a strange tint, isolate the background and correct that region instead of treating
+    the whole shot. This keeps the subject look intact and prevents the environment from
+    becoming oversaturated or off-tone.
+  step_pointer: "Color page -> isolate the background region -> adjust hue or saturation locally -> preserve subject"
+  common_mistake: >
+    Increasing the global grade to push the background into line, which will then
+    distort the subject and make the frame feel too processed.
+  related_entries: [muddy_colors_after_grade, color_splash_not_reading]
+  manual_reference: "Regional Correction; Qualifiers; Background Tone"
+
+- id: highlight_rolloff_too_steep
+  category: contrast
+  symptom_phrases:
+    - "the highlights go from okay to blown in one jump"
+    - "the top end feels harsh"
+    - "the highlights are suddenly clipping"
+    - "the image jumps from detail to white"
+  project_state_signals:
+    - "highlight rolloff slope too steep"
+    - "waveform shows sudden cliff at top end"
+  diagnosis: >
+    A steep highlight rolloff produces a violent transition from textured detail to
+    clipped white. The image may look dramatic, but it loses transition and realism.
+  tool_or_technique: >
+    Highlight curve rounding and gentle rolloff to soften the top-end slope.
+  explanation: >
+    Make the top-end transition more gradual so the eye sees a believable progression
+    from light detail into white. A harsh rolloff can turn a subtle highlight into a
+    flat white area, which kills detail and often feels artificial even if the exposure
+    is technically correct.
+  step_pointer: "Color page -> Curves -> smooth the highlight rolloff -> keep tonal value transitions gentle"
+  common_mistake: >
+    Increasing contrast further to add drama, which only sharpens the highlight cliff.
+  related_entries: [highlights_are_clipped, contrast_too_harsh_for_skin]
+  manual_reference: "Highlight Rolloff; Curves; Waveform Monitoring"
+
+- id: skin_hue_works_on_scope_but_not_on_screen
+  category: skin-tone
+  symptom_phrases:
+    - "the scope says the skin is fine but it still looks off"
+    - "my skin correction is technically right but still looks wrong"
+    - "the vectorscope is good but the face looks off"
+    - "the skin tones don't read correctly on screen"
+  project_state_signals:
+    - "skin cluster sits near reference but overall image still reads wrong"
+    - "local contrast or saturation issue rather than hue issue"
+  diagnosis: >
+    A technically correct skin tone can still look wrong if the surrounding contrast,
+    skin detail, or the subject's value range is off. The eye reads the whole face, not
+    only the vector position.
+  tool_or_technique: >
+    Face-level tonal sculpting and value contrast refinement, not only hue correction.
+  explanation: >
+    When the scope is right but the image still feels wrong, the issue is usually not the
+    hue itself but how the face is reading in value and separation. Adjust the face’s
+    contrast, detail, and local brightness to restore the look, while keeping the hue
+    target intact.
+  step_pointer: "Color page -> vectorscope for hue validation -> then adjust face contrast and value separation"
+  common_mistake: >
+    Chasing the vectorscope without checking the perceived face structure. A technically
+    correct hue can still look unnatural if the face tonality is flat or harsh.
+  related_entries: [skin_tone_hue_shift, skin_tone_ok_but_face_looks_flat]
+  manual_reference: "Skin Tone Control; Vectorscope; Face Structure"
+
+- id: harsh_midtones_in_portrait
+  category: contrast
+  symptom_phrases:
+    - "the midtones are too harsh"
+    - "faces feel too crunchy in the middle range"
+    - "the portrait has too much middle-tones"
+    - "the image looks brittle"
+  project_state_signals:
+    - "midtone curve too aggressive"
+    - "skin shape and facial planes are too obvious"
+  diagnosis: >
+    The midtone range is where human faces read structure and texture. If it is oversharpened
+    or too steep, faces start to feel brittle or over-processed instead of natural.
+  tool_or_technique: >
+    Gentle midtone rolloff and controlled contrast shaping in the face range.
+  explanation: >
+    A portrait can look great when the midtones are soft and readable. If the face is too
+    crisp or brittle in the midtone range, round off the curve slightly and refine the face
+    shape rather than increasing global contrast. Midtones are less forgiving than shadows or
+    highlights, so they need careful control.
+  step_pointer: "Color page -> Curves -> soften midtone slope -> re-check face structure"
+  common_mistake: >
+    Boosting midtone contrast to make the face pop, which often results in a brittle,
+    unnatural look.
+  related_entries: [contrast_too_harsh_for_skin, skin_tone_ok_but_face_looks_flat]
+  manual_reference: "Midtone Control; Curves; Portrait Contrast"
+
+- id: color_richness_lost_after_cleanup
+  category: saturation
+  symptom_phrases:
+    - "I cleaned up the image and lost the color"
+    - "the colors feel dull after the fix"
+    - "the grade lost its richness"
+    - "the image looks flat after cleanup"
+  project_state_signals:
+    - "heavy cleanup pass or noise reduction applied before color work"
+    - "global saturation reduced while fixing a local artifact"
+  diagnosis: >
+    Cleanup and noise reduction can reduce contrast or color punch if they are applied too
+    early or too aggressively. The shot may technically be cleaner, but the look loses
+    richness and separation.
+  tool_or_technique: >
+    Keep cleanup separate from the creative color pass and restore color selectively after
+    cleanup rather than globally.
+  explanation: >
+    A clean image is not automatically a good looking image. If the cleanup stage is flattening
+    the color, reintroduce the richness in a second stage with selective saturation or a focused
+    color pass. This keeps the cleanup step technical and the grade step creative.
+  step_pointer: "Color page -> separate cleanup node from color pass -> re-introduce richness afterward"
+  common_mistake: >
+    Doing the cleanup and the color grade in the same node or in the same step, which can
+    flatten the whole shot.
+  related_entries: [muddy_colors_after_grade, image_looks_too_soft_after_cleanup]
+  manual_reference: "Cleanup Order; Color Pass Order; Noise Reduction"
+
+- id: color_shift_after_cut_to_new_scene
+  category: matching
+  symptom_phrases:
+    - "the new scene is too different after the cut"
+    - "the color shift between scenes is too strong"
+    - "the edit feels like a jump"
+    - "the new shot is not sitting with the previous one"
+  project_state_signals:
+    - "adjacent shots from different scenes have different color temperatures"
+    - "scene groups not used or only partially matched"
+  diagnosis: >
+    A scene transition can feel disruptive even when the individual shots are technically
+    good, because the overall color temperature or balance is wrong compared to the preceding
+    shot. The fix is to correct the relationship between the shots, not just the individual clip.
+  tool_or_technique: >
+    Split-screen comparison, scene grouping, and base color match across the sequence.
+  explanation: >
+    Focus on the relationship between shots rather than on the individual shot in isolation.
+    Matching a scene means aligning the base slate of the color and exposure so later shots
+    sit naturally next to each other. This creates a smooth transition without requiring every
+    trick to carry excessive stylistic emotion.
+  step_pointer: "Color page -> compare adjacent shots -> match base color balance -> group scene if needed"
+  common_mistake: >
+    Adjusting one shot until it looks okay alone, then forgetting that the cut also has to
+    feel consistent in context.
+  related_entries: [shot_matching_mismatch, mismatch_after_cut_even_when_colors_match]
+  manual_reference: "Scene Matching; Grouping; Split Screen Matching"
+
+- id: skin_tone_jump_between_clips
+  category: matching
+  symptom_phrases:
+    - "skin tones jump between shots"
+    - "faces change color between cuts"
+    - "the scene changes in tone from shot to shot"
+    - "people don't feel like they're in the same scene"
+  project_state_signals:
+    - "same scene but different grade values across clips"
+    - "color shift in skin selection between timeline shots"
+  diagnosis: >
+    Skin-tone drift between shots creates a visual jump even when the camera and subject are
+    similar. This is often a match problem rather than a skin correction problem — the base
+    grade or balance is off from shot to shot.
+  tool_or_technique: >
+    Color match between shots using a neutral reference and a consistent hue relationship.
+  explanation: >
+    Use the scene as the unit of work, not the individual shot. Match skin tones across
+    adjacent shots first, then refine the scene's contrast and balance. This prevents the
+    viewer's eye from being yanked to the face instead of the subject's performance.
+  step_pointer: "Color page -> compare adjacent shots -> match skin tones -> use scene group for consistency"
+  common_mistake: >
+    Correcting each clip independently without checking how skin reads in the cut context.
+  related_entries: [shot_matching_mismatch, color_shift_after_cut_to_new_scene, skin_tone_hue_shift]
+  manual_reference: "Skin Tone Matching; Scene Matching; Split Screen Comparison"
+
+- id: color_temp_feels_wrong_after_exposure_fix
+  category: matching
+  symptom_phrases:
+    - "the image was corrected but the color temperature feels wrong"
+    - "the shot looks neutral but still off in temperature"
+    - "exposure fixed but the scene still has a tint"
+    - "the grade changed the white balance unexpectedly"
+  project_state_signals:
+    - "exposure adjustments changed the relative color balance"
+    - "overall grade pushes blue/orange while fixing highlights"
+  diagnosis: >
+    Exposure corrections can shift the perceived color balance, especially in mixed lighting,
+    because the scene's relative luminance changes. A neutral exposure may still need a small
+    color-temperature correction to restore natural balance.
+  tool_or_technique: >
+    Re-check white balance after exposure adjustments and correct the neutral target before
+    the creative finish.
+  explanation: >
+    Once the exposure and contrast are under control, re-check the neutral reference and the
+    overall scene balance. An exposure fix can subtly shift the frame warm or cool, and the
+    first grade decision should always be to restore neutral balance before layering style.
+  step_pointer: "Color page -> adjust exposure -> re-check neutral reference -> fix temperature if needed"
+  common_mistake: >
+    Treating a temperature shift as a contrast problem. Exposure and white balance are linked,
+    and the balance should be restored first.
+  related_entries: [white_balance_feels_wrong, skin_tone_hue_shift]
+  manual_reference: "White Balance; Exposure; Color Temperature"
+
+- id: noisy_detail_after_sharpening
+  category: noise-artifacts
+  symptom_phrases:
+    - "the image looks noisy after sharpening"
+    - "the edges are rough and noisy"
+    - "the detail is too crunchy"
+    - "sharpening made the shot noisy"
+  project_state_signals:
+    - "sharpness or edge enhancement applied aggressively"
+    - "skin or texture edges show patterned noise"
+  diagnosis: >
+    Sharpening is often overused in footage that already has texture or noise. The result is
+    amplified edge detail that starts to look noisy, especially in skin and low-contrast areas.
+  tool_or_technique: >
+    Light edge sharpening, localized controls, and noise reduction after sharpening rather than
+    before. Keep it subtle and controlled.
+  explanation: >
+    If sharpening makes the image look gritty or crunchy, the edge enhancement is outpacing the
+    image texture. Pull back the sharpening and check whether noise reduction or a slight softness
+    is needed in the darker or more detailed areas. Sometimes the fix is less about making the
+    image “sharper” and more about preserving the natural edge quality.
+  step_pointer: "Color page -> sharpened node -> reduce edge intensity -> re-check texture and noise"
+  common_mistake: >
+    Boosting detail to increase perceived realism, which often creates a noisy or fake edge response.
+  related_entries: [image_looks_noisy_in_shadow, color_richness_lost_after_cleanup]
+  manual_reference: "Sharpening; Noise; Detail Controls"
+
+- id: low_value_range_after_lut
+  category: contrast
+  symptom_phrases:
+    - "the LUT flattened the image"
+    - "all the values are stuck in the middle"
+    - "the grade lost range and depth"
+    - "the shadows and highlights collapsed"
+  project_state_signals:
+    - "LUT set before tonal adjustments"
+    - "no midtone or contrast shaping after LUT"
+  diagnosis: >
+    A LUT can flatten the tonal range if it is used as a final step without reintroducing separation.
+    The grade may look consistent but lose the dynamic spread that gives the image depth.
+  tool_or_technique: >
+    Use the LUT as a starting point, then sculpt contrast with curves and tonal separation.
+  explanation: >
+    LUTs are not a replacement for tonal control. If the image flattens after a LUT, pull back
+    on the curve and restore the tonal separation in the shadows, midtones, and highlights. Use the
+    waveform to confirm there is still headroom and a readable shape across the entire dynamic range.
+  step_pointer: "Color page -> LUT review -> check waveform -> shape contrast with curves to restore separation"
+  common_mistake: >
+    Treating the LUT as the grade itself instead of the first pass. A good LUT should not become
+    a flat, one-step final look.
+  related_entries: [colors_look_unnatural_after_lut, overcorrected_movie_look]
+  manual_reference: "LUTs; Curves; Dynamic Range"
+
+- id: contrast_works_but_composition_feels_dull
+  category: contrast
+  symptom_phrases:
+    - "the frame has contrast but still feels dull"
+    - "the image isn't alive even though the curves are right"
+    - "the scene has depth but no energy"
+    - "it's technically correct but still boring"
+  project_state_signals:
+    - "curve and contrast correct but no saturation or color separation"
+    - "neutral grade with good tonal range"
+  diagnosis: >
+    A technically correct image can still feel dull if the grade has no color separation or
+    enough difference in saturation between key subjects and the environment. Contrast is only
+    one part of the visual energy, not the whole story.
+  tool_or_technique: >
+    Controlled saturation adjustments, subject separation, and scene-specific mood shaping.
+  explanation: >
+    If the frame reads as dull despite a good tonal curve, the problem is usually the color energy,
+    not the contrast shape. Add selective color separation and reconnect the frame to the subject
+    mood without turning everything into a heavy stylized look.
+  step_pointer: "Color page -> evaluate saturation and tonal separation -> refine selective color and subject contrast"
+  common_mistake: >
+    Treating energy as a global contrast problem when the real issue is chroma separation or subject emphasis.
+  related_entries: [muddy_colors_after_grade, color_splash_not_reading]
+  manual_reference: "Contrast; Saturation; Vectorscope"
+
+- id: image_looks_worse_on_monitor_than_on_scope
+  category: scopes-reading
+  symptom_phrases:
+    - "the scopes look fine but the monitor looks bad"
+    - "the monitor doesn't match the scope"
+    - "the image looks wrong even though the scopes are okay"
+    - "why does the screen look different than the numbers"
+  project_state_signals:
+    - "monitor calibration mismatch or room conditions not considered"
+    - "grade based on scope numbers alone"
+  diagnosis: >
+    The scopes are objective but the monitor environment and calibration still matter. A grade can
+    be technically correct while still looking wrong because the display or room light is changing
+    the perception of contrast and color.
+  tool_or_technique: >
+    Use scopes as objective guidance, and cross-check with calibrated display conditions or a neutral monitor reference.
+  explanation: >
+    The eye is not always a reliable judge, and the monitor environment matters. Treat scopes as the
+    objective check and use the monitor only as a second layer of context. This lets you catch false
+    confidence or calibration issues before making a final grade decision.
+  step_pointer: "Color page -> compare scope to visual read -> check monitor conditions and neutral reference"
+  common_mistake: >
+    Trusting either the numbers or the image alone. Both need to be interpreted together, especially in a non-calibrated environment.
+  related_entries: [scope_numbers_look_wrong, scopes_reading_intro]
+  manual_reference: "Scopes; Monitor Calibration; Display Conditions"
+
+- id: subject_turns_gray_in_halo
+  category: qualifiers-masks
+  symptom_phrases:
+    - "the edges of the subject go gray"
+    - "the mask looks wrong around the face"
+    - "the correction touches the edges"
+    - "the halo is obvious"
+  project_state_signals:
+    - "qualifier or window is too soft or too broad"
+    - "edge falloff causes spill into surrounding background"
+  diagnosis: >
+    A qualifier or mask that is too broad or too soft can pull in the surrounding color and create a gray
+    halo around the subject. It often happens when the mask is set to a large range or the edge feather is too heavy.
+  tool_or_technique: >
+    Window falloff, edge refinement, and tighter qualifier range to make the mask match the subject.
+  explanation: >
+    The fix is almost always to tighten the selection and control the edge softness. If the edge is too soft,
+    the correction spills into the background and creates a halo. Use a more controlled window or qualifier,
+    then tune the edge softness so it follows the subject without absorbing surrounding values.
+  step_pointer: "Color page -> Qualifier / Window -> tighten edge -> reduce spread and falloff"
+  common_mistake: >
+    Making the effect bigger to be sure it covers the subject, which creates a gray halo around the edges.
+  related_entries: [qualifier_isolate_skin, image_looks_too_soft_after_cleanup]
+  manual_reference: "Qualifiers; Masks; Edge Falloff"
+
+- id: local_fix_affects_everything_else
+  category: node-structure
+  symptom_phrases:
+    - "one local fix changed the whole image"
+    - "the adjustment is affecting too much"
+    - "this correction is spilling outside the area"
+    - "my isolated adjustment is not isolated"
+  project_state_signals:
+    - "node tree combines correction and mask without clear separation"
+    - "qualifier or window too broad or not properly placed"
+  diagnosis: >
+    Local corrections require careful isolation. If the adjustment is affecting unrelated parts of the image,
+    the problem is usually a too-broad range, poor mask, or an order-of-operations issue in the node tree.
+  tool_or_technique: >
+    Cleaner node order, a tighter qualifier, and a better mask/edge control strategy.
+  explanation: >
+    Local corrections should feel like they are attached to one region, not the whole frame. The easiest way
+    to keep that under control is to isolate the specific area and verify the result in a matte or highlight preview
+    before refining. Once the correction is contained, the rest of the grade becomes easier to manage.
+  step_pointer: "Color page -> isolate region -> preview matte -> tighten qualifier and edge falloff"
+  common_mistake: >
+    Increasing the effect strength instead of tightening the mask. That makes the correction bigger and more visible, not cleaner.
+  related_entries: [qualifier_isolate_skin, node_structure_groups]
+  manual_reference: "Qualifiers; Node Structure; Local Correction"
+
+- id: image_looks_pushed_despite_low_saturation
+  category: saturation
+  symptom_phrases:
+    - "the image looks heavy but the saturation is low"
+    - "there's still too much visual weight"
+    - "the skin and colors feel dense even though saturation isn't high"
+    - "the frame feels overworked despite a low sat grade"
+  project_state_signals:
+    - "contrast and luminance heavily shaped with low sat"
+    - "image values concentrated in dark or midtone ranges"
+  diagnosis: >
+    Saturation is not the only thing that determines a heavy look. Dense contrast, sharp tonal transitions,
+    and aggressive shaping can also push the image into feeling overworked even when the saturation remains low.
+  tool_or_technique: >
+    Read the frame as a whole: correct tonal range, then revisit saturation only after contrast is balanced.
+  explanation: >
+    If the shot still feels heavy, the issue may be the tonal shape rather than the chroma. Check whether the
+    highlights, midtones, and shadows are too compressed, and soften the tonal curve before changing the colors.
+    That often yields a cleaner result than simply reducing saturation.
+  step_pointer: "Color page -> review contrast curve -> soften tonal shaping -> then re-check saturation"
+  common_mistake: >
+    Reducing saturation first when the real problem is tonal heaviness. That weakens the image without fixing the density issue.
+  related_entries: [overcorrected_movie_look, contrast_too_harsh_for_skin]
+  manual_reference: "Contrast; Saturation; Tone Control"
+
+- id: gradient_looks_uneven_across_frame
+  category: noise-artifacts
+  symptom_phrases:
+    - "the gradient has a weird step across the frame"
+    - "the sky transitions wrong"
+    - "the background looks uneven"
+    - "the gradient is changing unexpectedly"
+  project_state_signals:
+    - "smooth gradients processed with heavy curve adjustments"
+    - "banding appears in broad tonal range transitions"
+  diagnosis: >
+    Large, smooth tonal transitions can become visibly stepped when the grade pushes the bit depth or
+    tonal range too aggressively. This is especially noticeable in gradients or soft backgrounds.
+  tool_or_technique: >
+    Dither or grain, plus a more careful curve adjustment to preserve the gradient smoothness.
+  explanation: >
+    Gradients are particularly sensitive to tonal compression. If the sky or background shows a step pattern,
+    take the pressure off the curve and add a subtle reduction or texture layer to smooth the transition.
+    This is a tonal problem, not only a color problem.
+  step_pointer: "Color page -> inspect gradient -> reduce curve aggression -> add dither/grain if needed"
+  common_mistake: >
+    Treating the step as a color issue instead of a range issue. The fix is usually tonal smoothing, not just a color adjustment.
+  related_entries: [banding_in_gradients, highlights_are_clipped]
+  manual_reference: "Banding; Gradient Preservation; Tonal Smoothing"
+
+- id: face_warmth_changes_with_highlights
+  category: skin-tone
+  symptom_phrases:
+    - "the face changes color with the highlights"
+    - "the skin shifts warm when the light gets bright"
+    - "skin tone changes as the face gets brighter"
+    - "the face is fine in shadows but wrong in highlights"
+  project_state_signals:
+    - "highlight region shifts hue or saturation on skin"
+    - "skin tone not isolated with a proper range"
+  diagnosis: >
+    Highlight regions can create a color shift in skin because the face's tonal range is reacting
+    differently under brighter light. This can make the skin look too warm or too magenta in the brighter areas.
+  tool_or_technique: >
+    Selective highlight correction with a skin qualifier and controlled hue response.
+  explanation: >
+    If the skin warms or changes color in the brighter areas, the issue is not just the overall white balance.
+    The highlight range of the face is changing in hue relative to the rest of the tonal map, so it should be
+    corrected locally rather than globally. This keeps the skin consistent from shadow to highlight.
+  step_pointer: "Color page -> isolate face highlights -> check skin hue in upper range -> correct locally"
+  common_mistake: >
+    Pulling the whole shot warmer or cooler to fix the face highlights, which changes the entire frame.
+  related_entries: [skin_tone_overly_red, skin_tone_hue_shift]
+  manual_reference: "Skin Tone Control; Highlights; HSL Qualifier"
+
+- id: qualifier_isolate_skin
+  category: qualifiers-masks
+  symptom_phrases:
+    - "can't isolate skin"
+    - "masking affects everything not just the face"
+  project_state_signals:
+    - "no qualifier nodes detected in node tree"
+    - "wide qualifier range used (hue/sat/luma)"
+  diagnosis: >
+    A broad qualifier will capture more than just skin tones; isolating skin
+    typically requires tightening hue/sat/luma ranges and using window shapes
+    to remove background colors.
+  tool_or_technique: >
+    Hue/Saturation/Luminance qualifier combined with a Window (Power/Custom)
+    and a blur/soften falloff.
+  explanation: >
+    Use the qualifier to narrow the hue and saturation ranges to the skin
+    cluster on the vectorscope, then add a window to exclude background areas
+    and soften the matte to avoid hard edges. Check the highlight/matte view
+    to confirm the selection is tight and excludes non-skin regions.
+  step_pointer: "Color page -> Qualifier -> pick skin hue -> add Window -> Softness"
+  common_mistake: >
+    Expanding saturation too far to try and capture skin — this pulls in
+    background colors. Prefer iterative tightening and window masking.
+  related_entries: []
+  manual_reference: "Qualifiers and Masks; Matte Tools"
+
+- id: scopes_reading_intro
+  category: scopes-reading
+  symptom_phrases:
+    - "don't understand the scopes"
+    - "how do I read parade/vectorscope"
+  project_state_signals:
+    - "user unfamiliar with scopes mentioned in question"
+  diagnosis: >
+    Scopes provide objective measurements of color and exposure that are more
+    reliable than the eye, especially when matching shots or judging skin tones.
+  tool_or_technique: >
+    Parade, Vectorscope, Histogram - basic readings and what each axis means.
+  explanation: >
+    Parade shows RGB levels across the image useful for exposure and clipping.
+    Vectorscope shows chroma and hue clustering (useful for skin and balance).
+    Histogram summarizes overall luminance distribution. Learn a single
+    scope at a time and use it as a reference while comparing shots.
+  step_pointer: "Scopes -> open Vectorscope/Parade -> observe skin cluster/levels"
+  common_mistake: >
+    Relying on one scope alone; use Parade for exposure, Vectorscope for hue,
+    and Histogram for distribution when needed.
+  related_entries: []
+  manual_reference: "Scopes Overview; Reading Scopes"
+
+- id: node_structure_groups
+  category: node-structure
+  symptom_phrases:
+    - "how should I structure nodes"
+    - "confused about groups and nodes"
+  project_state_signals:
+    - "single-node grade with no grouping"
+  diagnosis: >
+    A clear node structure (base, corrections, look) and using Groups for scene
+    consistency makes grading repeatable and easier to adjust. Lumping all
+    adjustments into one node makes targeted fixes brittle.
+  tool_or_technique: >
+    Use a base node for technical corrections, a group pre/post for scene-wide
+    adjustments, and higher nodes for creative looks.
+  explanation: >
+    Separate technical corrections (exposure, color space), matching steps,
+    and creative looks into distinct nodes. Groups let you apply a base grade
+    across many clips so per-clip differences are handled in child nodes.
+  step_pointer: "Color page -> create group -> add base node -> add clip-level nodes"
+  common_mistake: >
+    Putting everything in one node and then losing the ability to tweak just
+    exposure or just color without affecting the other adjustments.
+  related_entries: []
+  manual_reference: "Node Trees and Groups; Best Practices"
+
